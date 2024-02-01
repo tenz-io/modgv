@@ -10,8 +10,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/lucasepe/modgv/internal/graph"
-	"github.com/lucasepe/modgv/internal/text"
+	"github.com/tenz-io/modgv/internal/graph"
+	"github.com/tenz-io/modgv/internal/text"
 )
 
 // Render translates “go mod graph” output taken from

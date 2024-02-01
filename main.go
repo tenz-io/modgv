@@ -29,7 +29,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/lucasepe/modgv/internal/render"
+	"github.com/tenz-io/modgv/internal/render"
 )
 
 const (
@@ -38,7 +38,7 @@ const (
 | | | | | | (_) | (_| | (_| |\ V / 
 |_| |_| |_|\___/ \__,_|\__, | \_/  v{{VERSION}}
                        |___/       
-crafted with passion by Luca Sepe - https://github.com/lucasepe/modgv`
+forked from- https://github.com/lucasepe/modgv - By Luca Sepe`
 )
 
 var version = "0.2.0"

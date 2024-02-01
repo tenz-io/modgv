@@ -1,6 +1,6 @@
 # modgv
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/lucasepe/modgv)](https://goreportcard.com/report/github.com/lucasepe/modgv) &nbsp;&nbsp;&nbsp; [![Go API Reference](https://img.shields.io/badge/go-docs-blue.svg?style=flat)](https://pkg.go.dev/github.com/lucasepe/modgv?tab=doc) &nbsp;&nbsp;&nbsp; [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/avelino/awesome-go#package-management)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tenz-io/modgv)](https://goreportcard.com/report/github.com/tenz-io/modgv) &nbsp;&nbsp;&nbsp; [![Go API Reference](https://img.shields.io/badge/go-docs-blue.svg?style=flat)](https://pkg.go.dev/github.com/tenz-io/modgv?tab=doc) &nbsp;&nbsp;&nbsp; [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/avelino/awesome-go#package-management)
 
 Converts 'go mod graph' output into [GraphViz](https://graphviz.gitlab.io/download/)'s DOT language.
 
@@ -20,7 +20,7 @@ For each module:
 
 ## Installation
 
-### From [binary releases](https://github.com/lucasepe/modgv/releases) (macOS, Windows, Linux)
+### From [binary releases](https://github.com/tenz-io/modgv/releases) (macOS, Windows, Linux)
 
 memo currently provides pre-built binaries for the following:
 
@@ -28,7 +28,7 @@ memo currently provides pre-built binaries for the following:
 - Windows
 - Linux
 
-1. Download the appropriate version for your platform from [memo releases](https://github.com/lucasepe/modgv/releases).
+1. Download the appropriate version for your platform from [memo releases](https://github.com/tenz-io/modgv/releases).
 
 2. Once downloaded unpack the archive (zip for Windows; tarball for Linux and macOS) to extract the executable binary. 
 
@@ -37,7 +37,7 @@ memo currently provides pre-built binaries for the following:
 ### Using [`Go`](https://go.dev/dl/) toolchain
 
 ```bash
-git clone https://github.com/lucasepe/modgv.git
+git clone https://github.com/tenz-io/modgv.git
 cd modgv
 go install
 ```

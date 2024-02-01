@@ -28,11 +28,11 @@ archives:
 nfpms:
   -
     package_name: modgv
-    vendor: Luca Sepe
-    homepage: https://github.com/lucasepe/modgv
+    vendor: Eddie Tenz
+    homepage: https://github.com/tenz-io/modgv
     description: Converts 'go mod graph' output into Graphviz's DOT language.
     license: MIT
-    maintainer: Luca Sepe
+    maintainer: Eddie Tenz
     formats:
       - deb
       - rpm
