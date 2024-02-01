@@ -42,7 +42,7 @@ forked from- https://github.com/lucasepe/modgv - By Luca Sepe`
 )
 
 var (
-	version = "0.2.0"
+	version = "1.1.0"
 	dstNode = os.Getenv("MODGV_DST_NODE")
 )
 
