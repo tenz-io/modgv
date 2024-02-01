@@ -41,7 +41,10 @@ const (
 forked from- https://github.com/lucasepe/modgv - By Luca Sepe`
 )
 
-var version = "0.2.0"
+var (
+	version = "0.2.0"
+	dstNode = os.Getenv("MODGV_DST_NODE")
+)
 
 func main() {
 
@@ -51,7 +54,7 @@ func main() {
 		usage()
 	}
 
-	if err := render.Render(os.Stdin, os.Stdout); err != nil {
+	if err := render.Render(os.Stdin, os.Stdout, dstNode); err != nil {
 		exitOnErr(err)
 	}
 }

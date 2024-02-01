@@ -22,7 +22,7 @@ type Graph struct {
 	MvsUnpicked []string
 }
 
-// convert reads “go mod graph” output from r and returns a graph, recording
+// Convert reads “go mod graph” output from r and returns a graph, recording
 // MVS picked and unpicked nodes along the way.
 func Convert(r io.Reader) (*Graph, error) {
 	scanner := bufio.NewScanner(r)

@@ -33,3 +33,5 @@ bin/
 experiments/**
 
 banner.jpg
+
+testdata/

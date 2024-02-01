@@ -17,10 +17,24 @@ import (
 // Render translates “go mod graph” output taken from
 // the 'in' reader into Graphviz's DOT language, writing
 // to the 'out' writer.
-func Render(in io.Reader, out io.Writer) error {
-	graph, err := graph.Convert(in)
+func Render(in io.Reader, out io.Writer, dst string) (err error) {
+	var (
+		g *graph.Graph
+	)
+
+	if dst != "" {
+		buf := &bytes.Buffer{}
+		err = text.Filter(in, buf, dst)
+		if err != nil {
+			return fmt.Errorf("failed to filter: %w", err)
+		}
+		g, err = graph.Convert(buf)
+	} else {
+		g, err = graph.Convert(in)
+	}
+
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to convert: %w", err)
 	}
 
 	fmt.Fprintf(out, "digraph gomodgraph {\n")
@@ -31,15 +45,15 @@ func Render(in io.Reader, out io.Writer) error {
 	fmt.Fprintf(out, "\tnodesep=\"0.8\";\n")
 	fmt.Fprintf(out, "\tnode [shape=plaintext style=\"filled,rounded\" penwidth=2 fontsize=12 fontname=\"monospace\"];\n")
 
-	fmt.Fprintf(out, "\t%q [shape=underline style=\"\" fontsize=14 label=<<b>%s</b>>];\n", graph.Root, graph.Root)
+	fmt.Fprintf(out, "\t%q [shape=underline style=\"\" fontsize=14 label=<<b>%s</b>>];\n", g.Root, g.Root)
 
-	for _, n := range graph.MvsPicked {
+	for _, n := range g.MvsPicked {
 		fmt.Fprintf(out, "\t%q [fillcolor=\"#0c5525\" label=<%s>];\n", n, textToHTML(n, "#fafafa"))
 	}
-	for _, n := range graph.MvsUnpicked {
+	for _, n := range g.MvsUnpicked {
 		fmt.Fprintf(out, "\t%q [fillcolor=\"#a3a3a3\" label=<%s>];\n", n, textToHTML(n, "#0e0e0e"))
 	}
-	out.Write(edgesAsDOT(graph))
+	out.Write(edgesAsDOT(g))
 
 	fmt.Fprintf(out, "}\n")
 
@@ -67,7 +81,7 @@ func textToHTML(line string, color string) string {
 		mod, ver = line[:i], line[i+1:]
 	}
 
-	u := fmt.Sprintf(`href="https://pkg.go.dev/%s?tab=doc"`, mod)
+	u := fmt.Sprintf(`href="https://%s?tab=doc"`, mod)
 
 	var sb strings.Builder
 	sb.WriteString(`<table border="0" cellspacing="8" `)
