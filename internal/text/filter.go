@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"reflect"
 	"strings"
 )
 
+// adjacent is a map of nodes to their adjacent nodes.
+// eg: {"A": ["B", "C", "E"], "B": ["D"], "D": ["E"], "E": ["F"], "G": ["H"]}
 type adjacent map[string][]string
 
 type edge [2]string
@@ -16,7 +17,7 @@ var (
 	// isRootFunc is a function that returns true if a string is a root node.
 	// used for testing purposes.
 	isRootFunc = func(s string) bool {
-		return strings.Contains(s, "@")
+		return !strings.Contains(s, "@")
 	}
 )
 
@@ -34,7 +35,7 @@ func Filter(in io.Reader, out io.Writer, end string) error {
 		return fmt.Errorf("no root found")
 	}
 
-	paths := adj.findAllPaths(root, end, []string{})
+	paths := adj.findAllPaths(root, end)
 	if len(paths) == 0 {
 		return fmt.Errorf("no path found")
 	}
@@ -44,7 +45,7 @@ func Filter(in io.Reader, out io.Writer, end string) error {
 		edges = append(edges, splitPathAsEdges(path)...)
 	}
 
-	return writeEdges(out, deduplicateEdges(edges))
+	return writeEdges(out, deduplicate(edges))
 }
 
 func writeEdges(out io.Writer, edges []edge) error {
@@ -98,27 +99,38 @@ func readAsAdjacent(in io.Reader) (adjacent, error) {
 }
 
 // findAllPaths returns all paths from src to dst
-func (adj adjacent) findAllPaths(src, dst string, path []string) [][]string {
-	path = append(path, src)
+func (adj adjacent) findAllPaths(src, dst string) [][]string {
+	var result [][]string
+	visited := make(map[string]bool)
+	var path []string
+	adj.dfs(src, dst, visited, &path, &result)
+	return result
+}
+
+// dfs performs a depth-first search.
+func (adj adjacent) dfs(src, dst string, visited map[string]bool, path *[]string, result *[][]string) {
+	if visited[src] {
+		return
+	}
 
 	if strings.Contains(src, dst) {
-		return [][]string{path}
+		*path = append(*path, src)
+		newPath := make([]string, len(*path))
+		copy(newPath, *path)
+		*result = append(*result, newPath)
+		*path = (*path)[:len(*path)-1]
+		return
 	}
 
-	if _, ok := adj[src]; !ok {
-		return [][]string{}
+	visited[src] = true
+	*path = append(*path, src)
+
+	for _, next := range adj[src] {
+		adj.dfs(next, dst, visited, path, result)
 	}
 
-	var paths [][]string
-	for _, neighbor := range adj[src] {
-		if !contains(path, neighbor) {
-			newPaths := adj.findAllPaths(neighbor, dst, path)
-			for _, np := range newPaths {
-				paths = append(paths, np)
-			}
-		}
-	}
-	return paths
+	visited[src] = false
+	*path = (*path)[:len(*path)-1]
 }
 
 func (adj adjacent) getRoot() string {
@@ -145,25 +157,18 @@ func splitPathAsEdges(path []string) []edge {
 	return paths
 }
 
-// deduplicateEdges reduplicates edges in a list of edges.
+// deduplicate reduplicates edges in a list of edges.
 // eg: [('A', 'B'), ('B', 'C'), ('A', 'B')] -> [('A', 'B'), ('B', 'C')]
-func deduplicateEdges(edges []edge) []edge {
-	var result []edge
-	for _, path := range edges {
-		if !containsEdge(result, path) {
-			result = append(result, path)
+func deduplicate[T comparable](list []T) []T {
+	var result []T
+	var seen = make(map[T]bool)
+	for _, item := range list {
+		if _, ok := seen[item]; !ok {
+			seen[item] = true
+			result = append(result, item)
 		}
 	}
 	return result
-}
-
-func containsEdge(edges []edge, edge edge) bool {
-	for _, p := range edges {
-		if reflect.DeepEqual(p, edge) {
-			return true
-		}
-	}
-	return false
 }
 
 func contains(path []string, node string) bool {

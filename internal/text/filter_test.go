@@ -35,6 +35,31 @@ func Test_readAsAdjacent(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "valid input 2",
+			args: args{
+				in: func() io.Reader {
+					return strings.NewReader(`
+											A B
+											B C
+											B D
+											D E
+											A E
+											E F
+											A F
+											G H
+											`)
+				}(),
+			},
+			want: adjacent{
+				"A": {"B", "E", "F"},
+				"B": {"C", "D"},
+				"D": {"E"},
+				"E": {"F"},
+				"G": {"H"},
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -56,7 +81,6 @@ func TestAdjacent_findAllPaths(t *testing.T) {
 	type args struct {
 		node string
 		dst  string
-		path []string
 	}
 	tests := []struct {
 		name string
@@ -74,7 +98,6 @@ func TestAdjacent_findAllPaths(t *testing.T) {
 			args: args{
 				node: "A",
 				dst:  "D",
-				path: []string{},
 			},
 			want: [][]string{
 				{"A", "B", "D"},
@@ -82,10 +105,28 @@ func TestAdjacent_findAllPaths(t *testing.T) {
 				{"A", "D"},
 			},
 		},
+		{
+			name: "find all paths from A to E",
+			adj: adjacent{
+				"A": {"B", "E", "F"},
+				"B": {"C", "D"},
+				"D": {"E", "F"},
+				"E": {"F"},
+				"G": {"H"},
+			},
+			args: args{
+				node: "A",
+				dst:  "E",
+			},
+			want: [][]string{
+				{"A", "B", "D", "E"},
+				{"A", "E"},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.adj.findAllPaths(tt.args.node, tt.args.dst, tt.args.path); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.adj.findAllPaths(tt.args.node, tt.args.dst); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("findAllPaths() = %v, want %v", got, tt.want)
 			}
 		})
@@ -147,7 +188,7 @@ func Test_deduplicateEdges(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := deduplicateEdges(tt.args.edges); !reflect.DeepEqual(got, tt.want) {
+			if got := deduplicate(tt.args.edges); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("deduplicateEdges() = %v, want %v", got, tt.want)
 			}
 		})
