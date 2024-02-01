@@ -12,6 +12,14 @@ type adjacent map[string][]string
 
 type edge [2]string
 
+var (
+	// isRootFunc is a function that returns true if a string is a root node.
+	// used for testing purposes.
+	isRootFunc = func(s string) bool {
+		return strings.Contains(s, "@")
+	}
+)
+
 type edgeWriter struct {
 	edges []edge
 }
@@ -115,9 +123,10 @@ func (adj adjacent) findAllPaths(src, dst string, path []string) [][]string {
 
 func (adj adjacent) getRoot() string {
 	for src, _ := range adj {
-		if len(strings.Split(src, "@")) == 1 {
+		if isRootFunc(src) {
 			return src
 		}
+
 	}
 	return ""
 }

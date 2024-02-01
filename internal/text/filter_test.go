@@ -159,9 +159,11 @@ func TestFilter(t *testing.T) {
 		in  io.Reader
 		end string
 	}
+	type setup func()
 	tests := []struct {
 		name    string
 		args    args
+		setup   setup
 		wantOut string
 		wantErr bool
 	}{
@@ -178,12 +180,44 @@ func TestFilter(t *testing.T) {
 				}(),
 				end: "D",
 			},
+			setup: func() {
+				isRootFunc = func(s string) bool {
+					return s == "A"
+				}
+			},
 			wantOut: "A B\nB D\n",
+			wantErr: false,
+		},
+		{
+			name: "filter input 2",
+			args: args{
+				in: func() io.Reader {
+					return strings.NewReader(`
+						A B
+						B C
+						B C
+						B D
+						D E
+						A E
+						E F
+						A F
+						G H
+					`)
+				}(),
+				end: "E",
+			},
+			setup: func() {
+				isRootFunc = func(s string) bool {
+					return s == "A"
+				}
+			},
+			wantOut: "A B\nB D\nD E\nA E\n",
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.setup()
 			out := &bytes.Buffer{}
 			err := Filter(tt.args.in, out, tt.args.end)
 			if (err != nil) != tt.wantErr {
